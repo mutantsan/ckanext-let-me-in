@@ -13,6 +13,8 @@ from ckan.logic import validate
 import ckanext.let_me_in.logic.schema as schema
 import ckanext.let_me_in.utils as lmi_utils
 
+# import ckanext.let_me_in.model as lmi_model
+
 
 @validate(schema.lmi_generate_otl)
 def lmi_generate_otl(
@@ -26,12 +28,17 @@ def lmi_generate_otl(
     tk.check_access("lmi_generate_otl", context, data_dict)
 
     user = cast(model.User, model.User.get(data_dict["user"]))
+    now = dt.utcnow()
+    expires_at = now + td(hours=24)
 
-    token_data = {
-        "user_id": user.id,
-        "exp": dt.utcnow() + td(hours=24)
-    }
+    token = jwt.encode(
+        {"user_id": user.id, "exp": expires_at, "created_at": now.timestamp()},
+        lmi_utils.get_secret(True),
+        algorithm="HS256",
+    )
 
-    token = jwt.encode(token_data, lmi_utils.get_secret(True), algorithm="HS256")
+    # lmi_model.OneTimeLoginToken.create(
+    #     {"token": token, "user_id": user.id, "expires_at": expires_at}
+    # )
 
     return {"url": tk.url_for("lmi.login_with_token", token=token, _external=True)}
