@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import cast
 
-from ckan.lib.api_token import _get_secret
 from ckan import model
+from ckan.lib.api_token import _get_secret
 
 
 def get_secret(encode: bool) -> str:
@@ -15,5 +15,5 @@ def get_secret(encode: bool) -> str:
 
 
 def get_user(user_id: str) -> model.User:
-    """Get a user by its ID"""
+    """Get a user by its ID/name"""
     return cast(model.User, model.User.get(user_id))

@@ -4,10 +4,19 @@ from typing import Any, Dict
 
 from ckan.logic.schema import validator_args
 
-
 Schema = Dict[str, Any]
 
 
 @validator_args
-def lmi_generate_otl(not_empty, unicode_safe, user_id_or_name_exists) -> Schema:
-    return {"user": [not_empty, unicode_safe, user_id_or_name_exists]}
+def lmi_generate_otl(
+    ignore_missing,
+    unicode_safe,
+    user_id_exists,
+    user_name_exists,
+    user_email_exists,
+) -> Schema:
+    return {
+        "uid": [ignore_missing, unicode_safe, user_id_exists],
+        "name": [ignore_missing, unicode_safe, user_name_exists],
+        "mail": [ignore_missing, unicode_safe, user_email_exists],
+    }

@@ -7,13 +7,11 @@ from typing import cast
 import jwt
 
 import ckan.plugins.toolkit as tk
-from ckan import types, model
+from ckan import model, types
 from ckan.logic import validate
 
 import ckanext.let_me_in.logic.schema as schema
 import ckanext.let_me_in.utils as lmi_utils
-
-# import ckanext.let_me_in.model as lmi_model
 
 
 @validate(schema.lmi_generate_otl)
@@ -27,7 +25,25 @@ def lmi_generate_otl(
     """
     tk.check_access("lmi_generate_otl", context, data_dict)
 
-    user = cast(model.User, model.User.get(data_dict["user"]))
+    uid = data_dict.get("uid", "")
+    name = data_dict.get("name", "")
+    mail = data_dict.get("mail", "")
+
+    if not any([uid, name, mail]):
+        raise tk.ValidationError(
+            tk._(
+                "Please, provide uid, name or mail option",
+            )
+        )
+
+    if sum([1 for x in (uid, name, mail) if x]) > 1:
+        raise tk.ValidationError(
+            tk._(
+                "One param could be used at a time: uid, name or mail",
+            )
+        )
+
+    user = cast(model.User, lmi_utils.get_user(uid or name or mail))
     now = dt.utcnow()
     expires_at = now + td(hours=24)
 
@@ -36,9 +52,5 @@ def lmi_generate_otl(
         lmi_utils.get_secret(True),
         algorithm="HS256",
     )
-
-    # lmi_model.OneTimeLoginToken.create(
-    #     {"token": token, "user_id": user.id, "expires_at": expires_at}
-    # )
 
     return {"url": tk.url_for("lmi.login_with_token", token=token, _external=True)}

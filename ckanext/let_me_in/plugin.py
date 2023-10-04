@@ -6,10 +6,6 @@ import ckan.plugins.toolkit as tk
 @tk.blanket.cli
 @tk.blanket.auth_functions
 @tk.blanket.blueprints
+@tk.blanket.validators
 class LetMeInPlugin(p.SingletonPlugin):
-    p.implements(p.IConfigurer)
-
-    # IConfigurer
-
-    def update_config(self, config_):
-        pass
+    pass

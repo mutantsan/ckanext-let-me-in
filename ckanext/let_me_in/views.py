@@ -4,10 +4,10 @@ import logging
 from datetime import datetime as dt
 
 import jwt
+from flask import Blueprint
 
 import ckan.model as model
 from ckan.plugins import toolkit as tk
-from flask import Blueprint
 
 import ckanext.let_me_in.utils as lmi_utils
 
@@ -47,5 +47,6 @@ def login_with_token(token):
 
 
 def _update_user_last_active(user: model.User) -> None:
+    """Update a last_active for a user after we logged him in."""
     user.last_active = dt.utcnow()
     model.Session.commit()
