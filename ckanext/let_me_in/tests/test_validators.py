@@ -10,7 +10,7 @@ from ckanext.let_me_in.logic.validators import user_email_exists
 
 class TestEmailExistValidator:
     def test_no_user(self):
-        with pytest.raises(tk.Invalid, match="User not found"):
+        with pytest.raises(tk.Invalid, match="Not found: User"):
             user_email_exists("test", {"model": model})
 
     @pytest.mark.usefixtures("clean_db")

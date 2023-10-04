@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime as dt
 from typing import cast
 
 from ckan import model
@@ -17,3 +18,9 @@ def get_secret(encode: bool) -> str:
 def get_user(user_id: str) -> model.User:
     """Get a user by its ID/name"""
     return cast(model.User, model.User.get(user_id))
+
+
+def update_user_last_active(user: model.User) -> None:
+    """Update a last_active for a user after we logged him in."""
+    user.last_active = dt.utcnow()
+    model.Session.commit()

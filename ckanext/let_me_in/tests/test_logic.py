@@ -6,6 +6,7 @@ import ckan.plugins.toolkit as tk
 from ckan.tests.helpers import call_action
 
 
+@pytest.mark.usefixtures("non_clean_db", "with_plugins")
 class TestGenerateOTL:
     def test_generate_no_params(self):
         with pytest.raises(
