@@ -1,4 +1,4 @@
-[![Tests](https://github.com/mutantsan/ckanext-let-me-in/workflows/Tests/badge.svg?branch=master)](https://github.com/mutantsan/ckanext-let-me-in/actions)
+[![Tests](https://github.com/mutantsan/ckanext-let-me-in/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/mutantsan/ckanext-let-me-in/actions/workflows/test.yml)
 
 # ckanext-let-me-in
 
