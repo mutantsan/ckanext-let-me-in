@@ -7,6 +7,7 @@ import ckan.plugins.toolkit as tk
 from ckan.tests.helpers import call_auth
 
 
+@pytest.mark.usefixtures("non_clean_db", "with_plugins")
 class TestGenerateOTLAuth:
     def test_anon(self):
         with pytest.raises(tk.NotAuthorized):

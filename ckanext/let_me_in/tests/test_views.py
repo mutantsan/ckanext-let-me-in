@@ -8,18 +8,16 @@ import ckan.model as model
 from ckan.tests.helpers import call_action
 
 
-@pytest.mark.usefixtures("non_clean_db")
+@pytest.mark.usefixtures("non_clean_db", "with_plugins")
 class TestOTLViews(object):
     def test_login_user_with_otl(self, app, user):
         otl = call_action("lmi_generate_otl", uid=user["id"])
 
-        result = app.get(otl["url"], status=200)
-        assert "You have been logged in" in result.text
+        assert "You have been logged in" in app.get(otl["url"]).body
 
-        result = app.get(otl["url"], status=200)
         assert (
             "You have tried to use a one-time login link that has expired"
-            in result.text
+            in app.get(otl["url"]).body
         )
 
     def test_user_login_expires_the_otl(self, app, user):
@@ -31,8 +29,7 @@ class TestOTLViews(object):
         user = cast(model.User, model.User.get(user["id"]))
         user.set_user_last_active()
 
-        result = app.get(otl["url"], status=200)
         assert (
             "You have tried to use a one-time login link that has expired"
-            in result.text
+            in app.get(otl["url"]).body
         )
