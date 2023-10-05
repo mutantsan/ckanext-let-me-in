@@ -27,6 +27,11 @@ def login_with_token(token):
         tk.h.flash_error(tk._("Invalid login link."))
     else:
         user = lmi_utils.get_user(token["user_id"])
+
+        if not user:
+            tk.h.flash_error(tk._("Invalid login link."))
+            return tk.h.redirect_to("user.login")
+
         context = {}
 
         for plugin in p.PluginImplementations(ILetMeIn):

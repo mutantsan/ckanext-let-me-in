@@ -33,3 +33,12 @@ class TestOTLViews(object):
             "You have tried to use a one-time login link that has expired"
             in app.get(otl["url"]).body
         )
+
+    def test_visit_link_after_user_has_been_deleted(self, app, user):
+        otl = call_action("lmi_generate_otl", uid=user["id"])
+
+        user = cast(model.User, model.User.get(user["id"]))
+        user.purge()
+        user.commit()
+
+        assert "Invalid login link" in app.get(otl["url"]).body

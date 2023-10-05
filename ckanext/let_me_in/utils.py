@@ -15,9 +15,9 @@ def get_secret(encode: bool) -> str:
     return _get_secret(encode)
 
 
-def get_user(user_id: str) -> model.User:
+def get_user(user_id: str) -> model.User | None:
     """Get a user by its ID/name"""
-    return cast(model.User, model.User.get(user_id))
+    return model.User.get(user_id)
 
 
 def update_user_last_active(user: model.User) -> None:
