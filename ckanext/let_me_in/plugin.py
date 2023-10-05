@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import ckan.model as model
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
@@ -16,7 +20,7 @@ class LetMeInPlugin(p.SingletonPlugin):
 
     # ILetMeIn
 
-    def after_otl_login(self, user: model.User) -> None:
+    def after_otl_login(self, user: model.User, context: dict[str, Any]) -> None:
         lmi_utils.update_user_last_active(user)
 
         tk.h.flash_success("You have been logged in.")

@@ -27,9 +27,10 @@ def login_with_token(token):
         tk.h.flash_error(tk._("Invalid login link."))
     else:
         user = lmi_utils.get_user(token["user_id"])
+        context = {}
 
         for plugin in p.PluginImplementations(ILetMeIn):
-            user = plugin.manage_user(user)
+            user = plugin.manage_user(user, context)
 
         if user.state != model.State.ACTIVE:
             tk.h.flash_error(tk._("User is not active. Can't login"))
@@ -44,12 +45,12 @@ def login_with_token(token):
             return tk.h.redirect_to("user.login")
 
         for plugin in p.PluginImplementations(ILetMeIn):
-            plugin.before_otl_login(user)
+            plugin.before_otl_login(user, context)
 
         tk.login_user(user)
 
         for plugin in p.PluginImplementations(ILetMeIn):
-            plugin.after_otl_login(user)
+            plugin.after_otl_login(user, context)
 
         return tk.h.redirect_to("user.me")
 

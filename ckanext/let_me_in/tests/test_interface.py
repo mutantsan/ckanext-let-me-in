@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import pytest
 
 import ckan.model as model
@@ -16,15 +20,15 @@ class TestOTLPlugin(p.SingletonPlugin):
         self.before_otl_login_call = 0
         self.after_otl_login_call = 0
 
-    def manage_user(self, user: model.User) -> model.User:
+    def manage_user(self, user: model.User, context: dict[str, Any]) -> model.User:
         self.manage_user_call += 1
 
         return user
 
-    def before_otl_login(self, user: model.User) -> None:
+    def before_otl_login(self, user: model.User, context: dict[str, Any]) -> None:
         self.before_otl_login_call += 1
 
-    def after_otl_login(self, user: model.User) -> None:
+    def after_otl_login(self, user: model.User, context: dict[str, Any]) -> None:
         self.after_otl_login_call += 1
 
 

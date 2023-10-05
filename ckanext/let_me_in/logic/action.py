@@ -20,8 +20,14 @@ def lmi_generate_otl(
 ) -> types.ActionResult.AnyDict:
     """Generate a one-time login link for a specified user
 
-    :param user: username of user_id
-    :type user: string
+    :param uid: user ID
+    :type uid: string
+
+    :param name: username
+    :type name: string
+
+    :param mail: user email
+    :type mail: string
     """
     tk.check_access("lmi_generate_otl", context, data_dict)
 
