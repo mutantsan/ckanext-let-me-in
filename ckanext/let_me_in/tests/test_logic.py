@@ -45,3 +45,7 @@ class TestGenerateOTL:
     @pytest.mark.usefixtures("clean_db")
     def test_by_male(self, user):
         call_action("lmi_generate_otl", mail=user["email"])
+
+    @pytest.mark.usefixtures("clean_db")
+    def test_ttl_option(self, user):
+        call_action("lmi_generate_otl", mail=user["email"])

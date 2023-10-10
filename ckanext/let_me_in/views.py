@@ -23,40 +23,38 @@ def login_with_token(token):
         token = jwt.decode(token, lmi_utils.get_secret(False), algorithms=["HS256"])
     except jwt.ExpiredSignatureError:
         tk.h.flash_error(tk._("The login link has expired. Please request a new one."))
+        return tk.h.redirect_to("user.login")
     except jwt.DecodeError:
         tk.h.flash_error(tk._("Invalid login link."))
-    else:
-        user = lmi_utils.get_user(token["user_id"])
+        return tk.h.redirect_to("user.login")
 
-        if not user:
-            tk.h.flash_error(tk._("Invalid login link."))
-            return tk.h.redirect_to("user.login")
+    user = lmi_utils.get_user(token["user_id"])
 
-        context = {}
+    if not user:
+        tk.h.flash_error(tk._("Invalid login link."))
+        return tk.h.redirect_to("user.login")
 
-        for plugin in p.PluginImplementations(ILetMeIn):
-            user = plugin.manage_user(user, context)
+    context = {}
 
-        if user.state != model.State.ACTIVE:
-            tk.h.flash_error(tk._("User is not active. Can't login"))
-            return tk.h.redirect_to("user.login")
+    for plugin in p.PluginImplementations(ILetMeIn):
+        user = plugin.manage_user(user, context)
 
-        if user.last_active and user.last_active > dt.fromtimestamp(
-            token["created_at"]
-        ):
-            tk.h.flash_error(
-                tk._("You have tried to use a one-time login link that has expired.")
-            )
-            return tk.h.redirect_to("user.login")
+    if user.state != model.State.ACTIVE:
+        tk.h.flash_error(tk._("User is not active. Can't login"))
+        return tk.h.redirect_to("user.login")
 
-        for plugin in p.PluginImplementations(ILetMeIn):
-            plugin.before_otl_login(user, context)
+    if user.last_active and user.last_active > dt.fromtimestamp(token["created_at"]):
+        tk.h.flash_error(
+            tk._("You have tried to use a one-time login link that has expired.")
+        )
+        return tk.h.redirect_to("user.login")
 
-        tk.login_user(user)
+    for plugin in p.PluginImplementations(ILetMeIn):
+        plugin.before_otl_login(user, context)
 
-        for plugin in p.PluginImplementations(ILetMeIn):
-            plugin.after_otl_login(user, context)
+    tk.login_user(user)
 
-        return tk.h.redirect_to("user.me")
+    for plugin in p.PluginImplementations(ILetMeIn):
+        plugin.after_otl_login(user, context)
 
-    return tk.h.redirect_to("user.login")
+    return tk.h.redirect_to("user.me")

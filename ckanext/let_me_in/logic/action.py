@@ -22,19 +22,23 @@ def lmi_generate_otl(
     """Generate a one-time login link for a specified user
 
     :param uid: user ID
-    :type uid: string
+    :type uid: str
 
     :param name: username
-    :type name: string
+    :type name: str
 
     :param mail: user email
-    :type mail: string
+    :type mail: str
+
+    :param ttl: TTL for OTL link in seconds
+    :type ttl: int
     """
     tk.check_access("lmi_generate_otl", context, data_dict)
 
     uid: str = data_dict.get("uid", "")
     name: str = data_dict.get("name", "")
     mail: str = data_dict.get("mail", "")
+    ttl: int = data_dict.get("ttl", lmi_config.get_default_otl_link_ttl())
 
     if not any([uid, name, mail]):
         raise tk.ValidationError(
@@ -56,7 +60,7 @@ def lmi_generate_otl(
     token = jwt.encode(
         {
             "user_id": user.id,
-            "exp": now + td(seconds=lmi_config.get_default_otl_link_ttl()),
+            "exp": now + td(seconds=ttl),
             "created_at": now.timestamp(),
         },
         lmi_utils.get_secret(True),

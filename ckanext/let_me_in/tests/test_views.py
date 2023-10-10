@@ -8,6 +8,10 @@ import pytest
 import ckan.model as model
 from ckan.tests.helpers import call_action
 
+HOUR = 3600
+SECOND = 1
+EXPIRED = True
+
 
 @pytest.mark.usefixtures("non_clean_db", "with_plugins")
 class TestOTLViews(object):
@@ -55,6 +59,33 @@ class TestOTLViews(object):
         """Each OTL link has an expiration date. By default, it's a 24 hours, but
         this is configurable. We need to be sure, that it works properly"""
         otl = call_action("lmi_generate_otl", uid=user["id"])
+
+        freezer.move_to(timedelta(**delta_kwargs))
+
+        resp_body: str = app.get(otl["url"]).body
+
+        err_msg = "The login link has expired. Please request a new one"
+        assert err_msg in resp_body if expired else err_msg not in resp_body
+
+    def test_user_is_not_active(self, app, user_factory):
+        """If user is not Active, we can't login"""
+        user = user_factory(state=model.State.DELETED)
+        otl = call_action("lmi_generate_otl", uid=user["id"])
+
+        assert "User is not active" in app.get(otl["url"]).body
+
+    @pytest.mark.parametrize(
+        "delta_kwargs,ttl,expired",
+        [
+            ({"seconds": SECOND}, SECOND, EXPIRED),  # 1 seconds, immediately expires
+            ({"hours": 2}, HOUR, EXPIRED),
+            ({"hours": 2}, HOUR * 3, not EXPIRED),
+        ],
+    )
+    def test_custom_otl_ttl(self, app, freezer, user, delta_kwargs, ttl, expired):
+        """We can set custom TTL for each generated OTL link"""
+
+        otl = call_action("lmi_generate_otl", uid=user["id"], ttl=ttl)
 
         freezer.move_to(timedelta(**delta_kwargs))
 
