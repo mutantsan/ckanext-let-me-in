@@ -25,10 +25,10 @@ Compatibility with core CKAN versions:
 
 ## Config settings
 
-**TODO**. This config option is only planned:
+Available configuration options:
 
-    # The number in seconds that specifies the OTL (optional, default: 86400).
-	ckanext.let_me_in.otl_ttl= 86400
+    # The number in seconds that specifies the OTL link TTL (optional, default: 86400).
+	ckanext.let_me_in.otl_link_ttl= 3600
 
 ## Developer installation
 

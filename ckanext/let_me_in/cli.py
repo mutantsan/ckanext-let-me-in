@@ -30,7 +30,7 @@ def uli(uid: str, name: str, mail: str):
             {"ignore_auth": True}, {"uid": uid, "name": name, "mail": mail}
         )
     except tk.ValidationError as e:
-        return click.secho(e, fg="red", err=True)
+        return click.secho(e.error_dict, fg="red", err=True)
 
     click.echo("Your one-time login link has been generated")
     click.secho(result["url"], fg="green")

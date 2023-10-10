@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime as dt
-from typing import cast
 
 from ckan import model
 from ckan.lib.api_token import _get_secret

@@ -10,6 +10,7 @@ import ckan.plugins.toolkit as tk
 from ckan import model, types
 from ckan.logic import validate
 
+import ckanext.let_me_in.config as lmi_config
 import ckanext.let_me_in.logic.schema as schema
 import ckanext.let_me_in.utils as lmi_utils
 
@@ -31,9 +32,9 @@ def lmi_generate_otl(
     """
     tk.check_access("lmi_generate_otl", context, data_dict)
 
-    uid = data_dict.get("uid", "")
-    name = data_dict.get("name", "")
-    mail = data_dict.get("mail", "")
+    uid: str = data_dict.get("uid", "")
+    name: str = data_dict.get("name", "")
+    mail: str = data_dict.get("mail", "")
 
     if not any([uid, name, mail]):
         raise tk.ValidationError(
@@ -51,10 +52,13 @@ def lmi_generate_otl(
 
     user = cast(model.User, lmi_utils.get_user(uid or name or mail))
     now = dt.utcnow()
-    expires_at = now + td(hours=24)
 
     token = jwt.encode(
-        {"user_id": user.id, "exp": expires_at, "created_at": now.timestamp()},
+        {
+            "user_id": user.id,
+            "exp": now + td(seconds=lmi_config.get_default_otl_link_ttl()),
+            "created_at": now.timestamp(),
+        },
         lmi_utils.get_secret(True),
         algorithm="HS256",
     )
