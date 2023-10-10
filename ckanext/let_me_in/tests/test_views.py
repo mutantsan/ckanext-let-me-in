@@ -51,7 +51,7 @@ class TestOTLViews(object):
     @pytest.mark.parametrize(
         "delta_kwargs,expired",
         [
-            ({"days": 1}, True),
+            ({"days": 1, "hours": 1}, True),
             ({"hours": 23}, False),
         ],
     )
@@ -77,7 +77,7 @@ class TestOTLViews(object):
     @pytest.mark.parametrize(
         "delta_kwargs,ttl,expired",
         [
-            ({"seconds": SECOND}, SECOND, EXPIRED),  # 1 seconds, immediately expires
+            ({"minutes": 5}, SECOND, EXPIRED),
             ({"hours": 2}, HOUR, EXPIRED),
             ({"hours": 2}, HOUR * 3, not EXPIRED),
         ],

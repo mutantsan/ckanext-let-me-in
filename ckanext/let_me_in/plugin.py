@@ -15,6 +15,7 @@ from ckanext.let_me_in.interfaces import ILetMeIn
 @tk.blanket.auth_functions
 @tk.blanket.blueprints
 @tk.blanket.validators
+@tk.blanket.config_declarations
 class LetMeInPlugin(p.SingletonPlugin):
     p.implements(ILetMeIn, inherit=True)
 

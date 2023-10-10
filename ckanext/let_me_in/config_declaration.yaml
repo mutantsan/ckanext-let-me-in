@@ -1,0 +1,9 @@
+version: 1
+groups:
+  - annotation: ckanext-let_me_in
+    options:
+      - key: ckanext.let_me_in.otl_link_ttl
+        type: int
+        description: Specify a default TTL for an OTL link in seconds
+        default: 86400
+        validators: ignore_missing int_validator is_positive_integer

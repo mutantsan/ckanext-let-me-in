@@ -1,4 +1,5 @@
 from __future__ import annotations
+from math import e
 
 import pytest
 
@@ -47,5 +48,24 @@ class TestGenerateOTL:
         call_action("lmi_generate_otl", mail=user["email"])
 
     @pytest.mark.usefixtures("clean_db")
-    def test_ttl_option(self, user):
-        call_action("lmi_generate_otl", mail=user["email"])
+    @pytest.mark.parametrize(
+        "ttl,raises_error",
+        [
+            (1, False),
+            (1000, False),
+            (0, True),
+            (-1, True),
+            (-999, True),
+        ],
+    )
+    def test_ttl_negative_value(self, ttl, raises_error, user):
+        if raises_error:
+            with pytest.raises(tk.ValidationError, match="Must be a positive integer"):
+                call_action("lmi_generate_otl", mail=user["email"], ttl=ttl)
+        else:
+            call_action("lmi_generate_otl", mail=user["email"], ttl=ttl)
+
+    @pytest.mark.usefixtures("clean_db")
+    def test_ttl_not_int(self, user):
+        with pytest.raises(tk.ValidationError, match="Invalid integer"):
+            call_action("lmi_generate_otl", mail=user["email"], ttl="xxx")
